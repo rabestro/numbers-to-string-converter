@@ -29,21 +29,21 @@ public class Main {
         if (input == null || input.length == 0) {
             return "";
         }
-        int a = input[0], b = a;
-        var output = new StringBuilder().append(a);
+        int firstNumber = input[0];
+        int lastNumber = firstNumber;
+        var output = new StringBuilder().append(firstNumber);
 
         for (int i = 1; i < input.length; ++i) {
-            int c = input[i];
-            if (c - b == 1) {
-                b = c;
-            } else {
-                output.append(printRangeEnd(a, b))
-                        .append(',')
-                        .append(c);
-                a = b = c;
+            int currentNumber = input[i];
+            var notNextNumber = currentNumber - lastNumber == 1;
+
+            if (notNextNumber) {
+                output.append(printRangeEnd(firstNumber, lastNumber)).append(',').append(currentNumber);
+                firstNumber = currentNumber;
             }
+            lastNumber = currentNumber;
         }
-        return output.append(printRangeEnd(a, b)).toString();
+        return output.append(printRangeEnd(firstNumber, lastNumber)).toString();
     }
 
     private static String printRangeEnd(int a, int b) {
@@ -51,5 +51,46 @@ public class Main {
         var isTwoNumberRange = b - a == 1;
         var delimiter = isTwoNumberRange ? "," : "-";
         return delimiter + b;
+    }
+
+    static class SequencePrinter {
+        private final Integer[] sequence;
+        private StringBuilder output;
+        private int firstNumber;
+        private int lastNumber;
+
+        SequencePrinter(Integer[] input) {
+            sequence = input;
+        }
+
+        public String print() {
+            if (sequence == null || sequence.length == 0) {
+                return "";
+            }
+            firstNumber = sequence[0];
+            lastNumber = firstNumber;
+            output = new StringBuilder().append(firstNumber);
+
+            for (int i = 1; i < sequence.length; ++i) {
+                int currentNumber = sequence[i];
+                var notNextNumber = currentNumber - lastNumber != 1;
+
+                if (notNextNumber) {
+                    printRangeEnd();
+                    output.append(',').append(currentNumber);
+                    firstNumber = currentNumber;
+                }
+                lastNumber = currentNumber;
+            }
+            printRangeEnd();
+            return output.toString();
+        }
+
+        private void printRangeEnd() {
+            if (firstNumber == lastNumber) return;
+            var isTwoNumberRange = lastNumber - firstNumber == 1;
+            var delimiter = isTwoNumberRange ? "," : "-";
+            output.append(delimiter).append(lastNumber);
+        }
     }
 }
