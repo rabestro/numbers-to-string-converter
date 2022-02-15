@@ -35,7 +35,7 @@ public class Main {
 
         for (int i = 1; i < input.length; ++i) {
             int currentNumber = input[i];
-            var notNextNumber = currentNumber - lastNumber == 1;
+            var notNextNumber = currentNumber - lastNumber != 1;
 
             if (notNextNumber) {
                 output.append(printRangeEnd(firstNumber, lastNumber)).append(',').append(currentNumber);
