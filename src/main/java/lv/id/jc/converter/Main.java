@@ -53,44 +53,4 @@ public class Main {
         return delimiter + b;
     }
 
-    static class SequencePrinter {
-        private final Integer[] sequence;
-        private StringBuilder output;
-        private int firstNumber;
-        private int lastNumber;
-
-        SequencePrinter(Integer[] input) {
-            sequence = input;
-        }
-
-        public String print() {
-            if (sequence == null || sequence.length == 0) {
-                return "";
-            }
-            firstNumber = sequence[0];
-            lastNumber = firstNumber;
-            output = new StringBuilder().append(firstNumber);
-
-            for (int i = 1; i < sequence.length; ++i) {
-                int currentNumber = sequence[i];
-                var notNextNumber = currentNumber - lastNumber != 1;
-
-                if (notNextNumber) {
-                    printRangeEnd();
-                    output.append(',').append(currentNumber);
-                    firstNumber = currentNumber;
-                }
-                lastNumber = currentNumber;
-            }
-            printRangeEnd();
-            return output.toString();
-        }
-
-        private void printRangeEnd() {
-            if (firstNumber == lastNumber) return;
-            var isTwoNumberRange = lastNumber - firstNumber == 1;
-            var delimiter = isTwoNumberRange ? "," : "-";
-            output.append(delimiter).append(lastNumber);
-        }
-    }
 }
