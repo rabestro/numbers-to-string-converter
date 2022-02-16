@@ -41,11 +41,12 @@ public class Main {
 
         for (int i = 1; i < input.length; ++i) {
             int currentNumber = input[i];
-            var isSequenceEnd = currentNumber - lastNumber != 1;
-            if (isSequenceEnd) {
+
+            if (isIntervalEnd(currentNumber, lastNumber)) {
                 stringJoiner.add(printInterval(firstNumber, lastNumber));
                 firstNumber = currentNumber;
             }
+
             lastNumber = currentNumber;
         }
         stringJoiner.add(printInterval(firstNumber, lastNumber));
@@ -53,13 +54,20 @@ public class Main {
         return stringJoiner.toString();
     }
 
+    private static boolean isIntervalEnd(int currentNumber, int lastNumber) {
+        return currentNumber - lastNumber != 1;
+    }
+
     private static String printInterval(int firstNumber, int lastNumber) {
         int numbersInInterval = lastNumber - firstNumber + 1;
-        return switch (numbersInInterval) {
-            case 1 -> String.valueOf(firstNumber);
-            case 2 -> firstNumber + TWO_NUMBERS_DELIMITER + lastNumber;
-            default -> firstNumber + INTERVAL_SYMBOL + lastNumber;
-        };
+        switch (numbersInInterval) {
+            case 1:
+                return String.valueOf(firstNumber);
+            case 2:
+                return firstNumber + TWO_NUMBERS_DELIMITER + lastNumber;
+            default:
+                return firstNumber + INTERVAL_SYMBOL + lastNumber;
+        }
     }
 
 }
