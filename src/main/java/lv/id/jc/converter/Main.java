@@ -1,9 +1,12 @@
 package lv.id.jc.converter;
 
-import java.util.Objects;
 import java.util.StringJoiner;
 
 public class Main {
+    private static final String INTERVALS_DELIMITER = ",";
+    private static final String TWO_NUMBERS_DELIMITER = ",";
+    private static final String INTERVAL_SYMBOL = "-";
+
     private final static Integer INPUTS[][] = {{-6, -3, -2, -1, 0, 1, 3, 4, 5, 7, 8, 9, 10, 11, 14, 15, 17, 18, 19, 20},
             {-6, -3, -2, 0, 1, 3, 4, 5, 7, 8, 9, 10, 11, 14, 15, 17, 18, 19, 20},
             {-4, -3, -2, -1, 0, 1, 3, 4, 5, 7, 8, 9, 10, 11, 14, 15, 17, 18, 19, 20},
@@ -32,41 +35,31 @@ public class Main {
         if (input == null || input.length == 0) {
             return "";
         }
-        var sequenceBuilder = new SequenceBuilder();
+        var stringJoiner = new StringJoiner(INTERVALS_DELIMITER);
+        int firstNumber = input[0];
+        int lastNumber = firstNumber;
 
-        sequenceBuilder.startRange(input[0]);
         for (int i = 1; i < input.length; ++i) {
-            if (input[i] - input[i - 1] == 1) {
-                continue;
+            int currentNumber = input[i];
+            var isSequenceEnd = currentNumber - lastNumber != 1;
+            if (isSequenceEnd) {
+                stringJoiner.add(printInterval(firstNumber, lastNumber));
+                firstNumber = currentNumber;
             }
-            sequenceBuilder.endRange(input[i - 1]);
-            sequenceBuilder.startRange(input[i]);
+            lastNumber = currentNumber;
         }
-        sequenceBuilder.endRange(input[input.length - 1]);
+        stringJoiner.add(printInterval(firstNumber, lastNumber));
 
-        return sequenceBuilder.build();
+        return stringJoiner.toString();
     }
 
-    static class SequenceBuilder {
-        private final StringJoiner stringJoiner = new StringJoiner(",");
-        private Integer firstNumber;
-
-        public void startRange(Integer number) {
-            firstNumber = number;
-        }
-
-        public void endRange(Integer lastNumber) {
-            if (Objects.equals(lastNumber, firstNumber)) {
-                stringJoiner.add(firstNumber.toString());
-            } else if (lastNumber - firstNumber == 1) {
-                stringJoiner.add(firstNumber + "," + lastNumber);
-            } else {
-                stringJoiner.add(firstNumber + "-" + lastNumber);
-            }
-        }
-
-        public String build() {
-            return stringJoiner.toString();
-        }
+    private static String printInterval(int firstNumber, int lastNumber) {
+        int numbersInInterval = lastNumber - firstNumber + 1;
+        return switch (numbersInInterval) {
+            case 1 -> String.valueOf(firstNumber);
+            case 2 -> firstNumber + TWO_NUMBERS_DELIMITER + lastNumber;
+            default -> firstNumber + INTERVAL_SYMBOL + lastNumber;
+        };
     }
+
 }
