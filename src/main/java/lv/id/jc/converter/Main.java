@@ -1,5 +1,8 @@
 package lv.id.jc.converter;
 
+import java.util.Objects;
+import java.util.StringJoiner;
+
 public class Main {
     private final static Integer INPUTS[][] = {{-6, -3, -2, -1, 0, 1, 3, 4, 5, 7, 8, 9, 10, 11, 14, 15, 17, 18, 19, 20},
             {-6, -3, -2, 0, 1, 3, 4, 5, 7, 8, 9, 10, 11, 14, 15, 17, 18, 19, 20},
@@ -29,68 +32,41 @@ public class Main {
         if (input == null || input.length == 0) {
             return "";
         }
-        int firstNumber = input[0];
-        int lastNumber = firstNumber;
-        var output = new StringBuilder().append(firstNumber);
+        var sequenceBuilder = new SequenceBuilder();
 
+        sequenceBuilder.startRange(input[0]);
         for (int i = 1; i < input.length; ++i) {
-            int currentNumber = input[i];
-            var notNextNumber = currentNumber - lastNumber == 1;
-
-            if (notNextNumber) {
-                output.append(printRangeEnd(firstNumber, lastNumber)).append(',').append(currentNumber);
-                firstNumber = currentNumber;
+            if (input[i] - input[i - 1] == 1) {
+                continue;
             }
-            lastNumber = currentNumber;
+            sequenceBuilder.endRange(input[i - 1]);
+            sequenceBuilder.startRange(input[i]);
         }
-        return output.append(printRangeEnd(firstNumber, lastNumber)).toString();
+        sequenceBuilder.endRange(input[input.length - 1]);
+
+        return sequenceBuilder.build();
     }
 
-    private static String printRangeEnd(int a, int b) {
-        if (a == b) return "";
-        var isTwoNumberRange = b - a == 1;
-        var delimiter = isTwoNumberRange ? "," : "-";
-        return delimiter + b;
-    }
+    static class SequenceBuilder {
+        private final StringJoiner stringJoiner = new StringJoiner(",");
+        private Integer firstNumber;
 
-    static class SequencePrinter {
-        private final Integer[] sequence;
-        private StringBuilder output;
-        private int firstNumber;
-        private int lastNumber;
-
-        SequencePrinter(Integer[] input) {
-            sequence = input;
+        public void startRange(Integer number) {
+            firstNumber = number;
         }
 
-        public String print() {
-            if (sequence == null || sequence.length == 0) {
-                return "";
+        public void endRange(Integer lastNumber) {
+            if (Objects.equals(lastNumber, firstNumber)) {
+                stringJoiner.add(firstNumber.toString());
+            } else if (lastNumber - firstNumber == 1) {
+                stringJoiner.add(firstNumber + "," + lastNumber);
+            } else {
+                stringJoiner.add(firstNumber + "-" + lastNumber);
             }
-            firstNumber = sequence[0];
-            lastNumber = firstNumber;
-            output = new StringBuilder().append(firstNumber);
-
-            for (int i = 1; i < sequence.length; ++i) {
-                int currentNumber = sequence[i];
-                var notNextNumber = currentNumber - lastNumber != 1;
-
-                if (notNextNumber) {
-                    printRangeEnd();
-                    output.append(',').append(currentNumber);
-                    firstNumber = currentNumber;
-                }
-                lastNumber = currentNumber;
-            }
-            printRangeEnd();
-            return output.toString();
         }
 
-        private void printRangeEnd() {
-            if (firstNumber == lastNumber) return;
-            var isTwoNumberRange = lastNumber - firstNumber == 1;
-            var delimiter = isTwoNumberRange ? "," : "-";
-            output.append(delimiter).append(lastNumber);
+        public String build() {
+            return stringJoiner.toString();
         }
     }
 }
